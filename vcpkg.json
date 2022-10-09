@@ -1,0 +1,12 @@
+{
+  "name": "dynamiccollisionadjustment",
+  "version": "1",
+  "dependencies": [
+    "fmt",
+    "rapidcsv",
+    "rsm-binary-io",
+    "simpleini",
+    "spdlog",
+    "xbyak"
+  ]
+}
