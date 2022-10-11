@@ -250,16 +250,31 @@ void AdjustmentHandler::ControllerData::AdjustScale()
 				return;
 			}
 
+			if (!controller) {
+				return;
+			}
+
 			RE::BSWriteLockGuard lock(world->worldLock);
+
+			int8_t shapeIdx = -1;
+			if (controller->shapes[0]) {
+				shapeIdx = 0;
+			} else if (controller->shapes[1]) {
+				shapeIdx = 1;
+			}
+
+			if (shapeIdx < 0) {
+				return;
+			}
 
 			if (auto proxyController = skyrim_cast<RE::bhkCharProxyController*>(controller)) {
 				if (auto proxy = static_cast<RE::hkpCharacterProxy*>(proxyController->proxy.referencedObject.get())) {
 					if (auto wrapper = proxy->shapePhantom->collidable.shape->userData) {
 						auto clone = RE::NiPointer<RE::bhkShape>(Utils::Clone<RE::bhkShape>(wrapper, { actorScale, actorScale, actorScale }));
 						proxy->shapePhantom->SetShape(static_cast<RE::hkpShape*>(clone->referencedObject.get()));
-						controller->shapes[1]->DecRefCount();
-						controller->shapes[1]->DecRefCount();
-						controller->shapes[1] = clone;
+						controller->shapes[shapeIdx]->DecRefCount();
+						controller->shapes[shapeIdx]->DecRefCount();
+						controller->shapes[shapeIdx] = clone;
 					}
 				}
 			} else if (auto rigidBodyController = skyrim_cast<RE::bhkCharRigidBodyController*>(controller)) {
@@ -267,9 +282,9 @@ void AdjustmentHandler::ControllerData::AdjustScale()
 					if (auto wrapper = rigidBody->character->collidable.shape->userData) {
 						auto clone = RE::NiPointer<RE::bhkShape>(Utils::Clone<RE::bhkShape>(wrapper, { actorScale, actorScale, actorScale }));
 						rigidBody->character->SetShape(static_cast<RE::hkpShape*>(clone->referencedObject.get()));
-						controller->shapes[1]->DecRefCount();
-						controller->shapes[1]->DecRefCount();
-						controller->shapes[1] = clone;
+						controller->shapes[shapeIdx]->DecRefCount();
+						controller->shapes[shapeIdx]->DecRefCount();
+						controller->shapes[shapeIdx] = clone;
 					}
 				}
 			}
