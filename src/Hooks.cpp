@@ -19,11 +19,13 @@ namespace Hooks
 		logger::trace("...success");
 	}
 
+	static auto ptrOffset = REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) == std::strong_ordering::less ? -0xB8 : -0xC0;
+
 	bool SneakHooks::AddMovementFlags(RE::ActorState* a_this, int16_t a_flag)
 	{
 		bool ret = _AddMovementFlags(a_this, a_flag);
 
-		auto actor = SKSE::stl::adjust_pointer<RE::Actor>(a_this, -0xB8);
+		auto actor = SKSE::stl::adjust_pointer<RE::Actor>(a_this, ptrOffset);
 		if (actor) {
 			AdjustmentHandler::GetSingleton()->ActorSneakStateChanged(actor->GetHandle(), true);
 		}
@@ -35,7 +37,7 @@ namespace Hooks
 	{
 		bool ret = _RemoveMovementFlags(a_this, a_flag);
 
-		auto actor = SKSE::stl::adjust_pointer<RE::Actor>(a_this, -0xB8);
+		auto actor = SKSE::stl::adjust_pointer<RE::Actor>(a_this, ptrOffset);
 		if (actor) {
 			AdjustmentHandler::GetSingleton()->ActorSneakStateChanged(actor->GetHandle(), false);
 		}

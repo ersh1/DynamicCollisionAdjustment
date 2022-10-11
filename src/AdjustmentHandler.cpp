@@ -256,14 +256,12 @@ void AdjustmentHandler::ControllerData::AdjustScale()
 
 			RE::BSWriteLockGuard lock(world->worldLock);
 
-			int8_t shapeIdx = -1;
-			if (controller->shapes[0]) {
+			int8_t shapeIdx = 1;
+			if (!controller->shapes[shapeIdx]) {
 				shapeIdx = 0;
-			} else if (controller->shapes[1]) {
-				shapeIdx = 1;
-			}
-
-			if (shapeIdx < 0) {
+			} 
+			
+			if (!controller->shapes[shapeIdx]) {
 				return;
 			}
 
