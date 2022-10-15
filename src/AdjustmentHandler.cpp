@@ -265,22 +265,26 @@ void AdjustmentHandler::ControllerData::AdjustScale()
 				return;
 			}
 
+			auto controllerPtr = RE::NiPointer<RE::bhkCharacterController>(controller);
+
 			if (auto proxyController = skyrim_cast<RE::bhkCharProxyController*>(controller)) {
-				if (auto proxy = static_cast<RE::hkpCharacterProxy*>(proxyController->proxy.referencedObject.get())) {
-					if (auto wrapper = proxy->shapePhantom->collidable.shape->userData) {
-						auto clone = RE::NiPointer<RE::bhkShape>(Utils::Clone<RE::bhkShape>(wrapper, { actorScale, actorScale, actorScale }));
+				RE::hkRefPtr<RE::hkpCharacterProxy> proxy(static_cast<RE::hkpCharacterProxy*>(proxyController->proxy.referencedObject.get()));
+				if (proxy) {
+					RE::NiPointer<RE::bhkShape> wrapper(proxy->shapePhantom->collidable.shape->userData);
+					if (wrapper) {
+						auto clone = RE::NiPointer<RE::bhkShape>(Utils::Clone<RE::bhkShape>(wrapper.get(), { actorScale, actorScale, actorScale }));
 						proxy->shapePhantom->SetShape(static_cast<RE::hkpShape*>(clone->referencedObject.get()));
-						controller->shapes[shapeIdx]->DecRefCount();
 						controller->shapes[shapeIdx]->DecRefCount();
 						controller->shapes[shapeIdx] = clone;
 					}
 				}
 			} else if (auto rigidBodyController = skyrim_cast<RE::bhkCharRigidBodyController*>(controller)) {
-				if (auto rigidBody = static_cast<RE::hkpCharacterRigidBody*>(rigidBodyController->rigidBody.referencedObject.get())) {
-					if (auto wrapper = rigidBody->character->collidable.shape->userData) {
-						auto clone = RE::NiPointer<RE::bhkShape>(Utils::Clone<RE::bhkShape>(wrapper, { actorScale, actorScale, actorScale }));
+				RE::hkRefPtr<RE::hkpCharacterRigidBody> rigidBody(static_cast<RE::hkpCharacterRigidBody*>(rigidBodyController->rigidBody.referencedObject.get()));
+				if (rigidBody) {
+					RE::NiPointer<RE::bhkShape> wrapper(rigidBody->character->collidable.shape->userData);
+					if (wrapper) {
+						auto clone = RE::NiPointer<RE::bhkShape>(Utils::Clone<RE::bhkShape>(wrapper.get(), { actorScale, actorScale, actorScale }));
 						rigidBody->character->SetShape(static_cast<RE::hkpShape*>(clone->referencedObject.get()));
-						controller->shapes[shapeIdx]->DecRefCount();
 						controller->shapes[shapeIdx]->DecRefCount();
 						controller->shapes[shapeIdx] = clone;
 					}
